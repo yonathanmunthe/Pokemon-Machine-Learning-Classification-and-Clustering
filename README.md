@@ -13,24 +13,16 @@ So actually I am using the CRISP-DM framework which consists of 6 steps as below
 I am using python in jupyter notebook. My findings of my ML model is as follows :
 1. My model performance (accuracy) is still low (< 70%)
 2. My model is not good enough might be caused by :
-
-a. Features are not distinctive between each Pokemon Type
-
-b. The label consists of too many categorical label
-
+- Features are not distinctive between each Pokemon Type
+- The label consists of too many categorical label
 3. All of the features is important to the model (Variable Importance)
 
 Future Improvement :
 1. Make a better model by :
-
-a. Use a better, more distinctive and characterized input data (features)
-
-b. Pick two or more features (not all features) to feed the model
-
-c. Pick top 3 Pokemon Type labels and group other Pokemon Type to "Others"
-
-d. Group the data in each feature and encode it to integer 0 and 1 (ex. 0 = HP > 100, 1 = HP <= 100)
-
+* Use a better, more distinctive and characterized input data (features)
++ Pick two or more features (not all features) to feed the model
+# Pick top 3 Pokemon Type labels and group other Pokemon Type to "Others"
+# Group the data in each feature and encode it to integer 0 and 1 (ex. 0 = HP > 100, 1 = HP <= 100)
 2. Pick another Classification technique
 3. Create another Machine Learning Model with different goal
 
