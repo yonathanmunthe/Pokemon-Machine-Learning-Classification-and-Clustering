@@ -1,5 +1,4 @@
 # Pokemon Machine Learning Classification and Clustering
-# pokemonclassification
 This is my Machine Learning Classification for the Pokemon Dataset from Kaggle. I am trying to make Classification Model for the Pokemon Dataset. You can find the dataset from :
 https://www.kaggle.com/abcsds/pokemon
 
@@ -40,3 +39,4 @@ Hope you find my repo useful and you can make some improvements based on my work
 
 
 Addition : I am uploading another Machine Learning model : Clustering Machine Learning with R Programming. I use the K-Means Clustering technique and divide the population into 3 clusters. You can find the RMD file and the Chrome HTML documents R Programming - Clustering folder.
+
