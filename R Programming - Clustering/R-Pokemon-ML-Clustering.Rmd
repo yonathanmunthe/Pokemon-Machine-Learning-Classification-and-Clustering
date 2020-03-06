@@ -1,0 +1,235 @@
+---
+title: "Pokemon Clustering"
+author : "Yonathan Elia Munthe"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*.
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
+---------------------------------------------------------------------------------------
+
+# Load data
+```{r}
+rawdata <- read.csv("Pokemon.csv")
+tail(rawdata)
+```
+
+Exploratory Data Analysis (EDA)
+-------------------------
+The goal of EDA is to develop an understanding of the dataset and we use questions to answer our curiosity (a must have trait for a data scientist!)
+
+Guide Points for the question :
+
+1. Variation within variable (Distribution, Measures of Central Tendency)
+
+2. Covariation between variables (Relationship between 2 variables)
+
+# Data understanding
+```{r}
+dim(rawdata)
+```
+```{r}
+str(rawdata)
+```
+```{r}
+summary(rawdata)
+```
+
+# Loading Packages
+Install if the package doesn't exist 
+```{r}
+library(DataExplorer)
+library(corrplot)
+library(tidyverse)
+```
+
+# Plot Missing Data
+```{r}
+plot_missing(rawdata)
+```
+
+# Variation WITHIN each variable
+## Histogram 
+```{r}
+h1 <- hist(rawdata$Total, xlab = "Value", ylab= "Count", main = "Total", prob = FALSE, col= "lightgray")
+xfit <- seq(min(rawdata$Total), max(rawdata$Total), length = 800)
+yfit <- dnorm(xfit, mean = mean(rawdata$Total), sd = sd(rawdata$Total))
+yfit <- yfit * diff(h1$mids[1:2]) * length(rawdata$Total)
+lines(xfit, yfit, col = "red", lwd = 2)
+
+h2 <- hist(rawdata$HP, xlab = "Value", ylab= "Count", main = "HP", prob = FALSE, col= "lightgray")
+xfit <- seq(min(rawdata$HP), max(rawdata$HP), length = 800)
+yfit <- dnorm(xfit, mean = mean(rawdata$HP), sd = sd(rawdata$HP))
+yfit <- yfit * diff(h2$mids[1:2]) * length(rawdata$HP)
+lines(xfit, yfit, col = "red", lwd = 2)
+
+h3 <- hist(rawdata$Attack, xlab = "Value", ylab= "Count", main = "Attack", prob = FALSE, col= "lightgray")
+xfit <- seq(min(rawdata$Attack), max(rawdata$Attack), length = 800)
+yfit <- dnorm(xfit, mean = mean(rawdata$Attack), sd = sd(rawdata$Attack))
+yfit <- yfit * diff(h3$mids[1:2]) * length(rawdata$Attack)
+lines(xfit, yfit, col = "red", lwd = 2)
+
+h4 <- hist(rawdata$Defense, xlab = "Value", ylab= "Count", main = "Defense", prob = FALSE, col= "lightgray")
+xfit <- seq(min(rawdata$Defense), max(rawdata$Defense), length = 800)
+yfit <- dnorm(xfit, mean = mean(rawdata$Defense), sd = sd(rawdata$Defense))
+yfit <- yfit * diff(h4$mids[1:2]) * length(rawdata$Defense)
+lines(xfit, yfit, col = "red", lwd = 2)
+
+h5 <- hist(rawdata$Sp..Atk, xlab = "Value", ylab= "Count", main = "Sp..Atk", prob = FALSE, col= "lightgray")
+xfit <- seq(min(rawdata$Sp..Atk), max(rawdata$Sp..Atk), length = 800)
+yfit <- dnorm(xfit, mean = mean(rawdata$Sp..Atk), sd = sd(rawdata$Sp..Atk))
+yfit <- yfit * diff(h5$mids[1:2]) * length(rawdata$Sp..Atk)
+lines(xfit, yfit, col = "red", lwd = 2)
+
+h6 <- hist(rawdata$Sp..Def, xlab = "Value", ylab= "Count", main = "Sp..Def", prob = FALSE, col= "lightgray")
+xfit <- seq(min(rawdata$Sp..Def), max(rawdata$Sp..Def), length = 800)
+yfit <- dnorm(xfit, mean = mean(rawdata$Sp..Def), sd = sd(rawdata$Sp..Def))
+yfit <- yfit * diff(h6$mids[1:2]) * length(rawdata$Sp..Def)
+lines(xfit, yfit, col = "red", lwd = 2)
+
+h7 <- hist(rawdata$Speed, xlab = "Value", ylab= "Count", main = "Speed", prob = FALSE, col= "lightgray")
+xfit <- seq(min(rawdata$Speed), max(rawdata$Speed), length = 800)
+yfit <- dnorm(xfit, mean = mean(rawdata$Speed), sd = sd(rawdata$Speed))
+yfit <- yfit * diff(h7$mids[1:2]) * length(rawdata$Speed)
+lines(xfit, yfit, col = "red", lwd = 2)
+```
+
+# Extra Questions Based on Curiosity
+1. Pokemon type apa yang terbanyak?
+```{r}
+library(tidyverse)
+rawdata %>% group_by(Type.1) %>% count(Type.1) %>% arrange(desc(n), Type.1)
+```
+
+2. Pokemon terkuat?
+```{r}
+rawdata %>% filter(Total == max(Total))
+rawdata %>% arrange(desc(Total)) %>% top_n(5, Total)
+```
+
+3. Pokemon terlemah?
+```{r}
+rawdata %>% filter(Total == min(Total))
+rawdata %>% arrange(Total) %>% top_n(-5, Total)
+```
+
+4. Apakah benar Pokemon type Rock memiliki Defense terbesar?
+```{r}
+rawdata %>% group_by(Type.1) %>% summarise_each(funs(mean)) %>% arrange(desc(Defense)) %>% select(Type.1, Defense)
+```
+
+5. Apakah benar Pokemon type Water memiliki HP terbesar?
+```{r}
+rawdata %>% group_by(Type.1) %>% summarise_each(funs(mean)) %>% arrange(desc(HP)) %>% select(Type.1, HP)
+```
+
+6. Apakah benar Pokemon type Psychic memiliki Sp..Atk terbesar?
+```{r}
+rawdata %>% group_by(Type.1) %>% summarise_each(funs(mean)) %>% arrange(desc(Sp..Atk)) %>% select(Type.1, Sp..Atk)
+```
+
+7. Apakah benar Pokemon type Fighting memiliki Attack terbesar?
+```{r}
+rawdata %>% group_by(Type.1) %>% summarise_each(funs(mean)) %>% arrange(desc(Attack)) %>% select(Type.1, Attack)
+```
+
+8. Pokemon type apa yang memiliki Sp..Def dan Speed terbesar?
+
+9. Apakah Pokemon Legendary adalah Pokemon terkuat di masing-masing type group?
+
+# Machine Learning : Clustering
+Clustering adalah proses pengelompokkan objek / data (grouping) sedemikian rupa sehingga masing-masing anggota / data pada satu kelompok memiliki karakteristik yang lebih mirip satu sama lain dibandingkan dengan kelompok lain. Clustering tidak membutuhkan label (unsupervised learning).
+
+## Membagi Pokemon menjadi kelompok yang memiliki karakteristik / status yang mirip
+### Cek dataset
+```{r}
+tail(rawdata)
+```
+
+### Create the k-means model: km.out
+```{r}
+km.out <- kmeans(rawdata[,5:11], center=3, nstart=10)
+km.out
+```
+
+### Print the cluster membership component / characteristic of the model
+```{r}
+km.out$centers
+datacenter <- data.frame(km.out$centers)
+datacenter$cluster <- c(1,2,3)
+datacenter
+#print(km.out$cluster)
+```
+
+### Nambah kolom cluster ke rawdata
+```{r}
+outputdata <- rawdata
+outputdata$cluster <- km.out$cluster
+tail(outputdata)
+```
+
+### Jumlah setiap cluster
+```{r}
+outputdata %>% group_by(cluster) %>% count(cluster)
+df_n_cluster <- outputdata %>% group_by(cluster) %>% count(cluster)
+df_n_cluster
+```
+
+### Left Join Table / DF datacenter & df_n_cluster
+```{r}
+left_join(datacenter, df_n_cluster, by = "cluster")
+```
+
+### Scatter plot
+```{r}
+plot(outputdata[,5:6], col = km.out$cluster,
+     main = "k-means with 3 clusters")
+```
+
+#### Data Cluster 1
+```{r}
+cluster1 <- outputdata %>% filter(cluster==1)
+tail(cluster1)
+cluster1 %>% group_by(cluster) %>% count(cluster)
+```
+
+#### Scatter plot of Cluster 1
+```{r}
+plot(cluster1[,5:6], col = "black",
+     main = "k-means with 3 clusters (cluster 1)")
+```
+
+#### Data Cluster 2
+```{r}
+cluster2 <- outputdata %>% filter(cluster==2)
+tail(cluster2)
+cluster2 %>% group_by(cluster) %>% count(cluster)
+```
+
+#### Scatter plot of Cluster 2
+```{r}
+plot(cluster2[,5:6], col = "red",
+     main = "k-means with 3 clusters (cluster 2)")
+```
+
+#### Data Cluster 3
+```{r}
+cluster3 <- outputdata %>% filter(cluster==3)
+tail(cluster3)
+cluster3 %>% group_by(cluster) %>% count(cluster)
+```
+
+#### Scatter plot of Cluster 3
+```{r}
+plot(cluster3[,5:6], col = "green",
+     main = "k-means with 3 clusters, cluster 3")
+```
+
